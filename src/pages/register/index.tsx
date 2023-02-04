@@ -1,5 +1,5 @@
 import { CreateUserInput } from "@/schema/user.schema";
-import { trpc } from "@/utils/trpc";
+import { setToken, trpc } from "@/utils/trpc";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
@@ -9,9 +9,10 @@ const RegisterPage = () => {
   const router = useRouter();
 
   const { mutate, error } = trpc.user.userRegister.useMutation({
-    onError: (error) => { },
-    onSuccess: () => {
-      router.push("/login");
+    onSuccess: ({ accessToken }) => {
+      setToken(accessToken);
+      console.log(accessToken);
+      router.push("/");
     },
   });
 
@@ -36,6 +37,11 @@ const RegisterPage = () => {
         <label>
           Name
           <input type="name" placeholder="Alex" {...register("name")} />
+        </label>
+
+        <label>
+          Password
+          <input type="password" placeholder="" {...register("password")} />
         </label>
 
         <button type="submit">Okay</button>

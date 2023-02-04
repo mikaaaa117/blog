@@ -1,16 +1,16 @@
 import { trpc } from "@/utils/trpc";
 import styled from "styled-components";
 import Head from "next/head";
+import { Typography } from "@/UI/Typography/Typography";
 
-const StyledUserItem = styled.li`
+const StyledPostItem = styled.li`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.1rem;
 `;
-
 export default function Home() {
-  const { data, isLoading, error } = trpc.user.getUsers.useQuery();
+  const { data, isLoading, error } = trpc.post.getPosts.useQuery();
 
   if (isLoading) return <h1>Loading...</h1>;
   if (error) return <h1>{error.message}</h1>;
@@ -25,13 +25,11 @@ export default function Home() {
       </Head>
       <ul>
         {data &&
-          data.map((user) => (
-            <StyledUserItem key={user.id}>
-              <h1>User {user.name}</h1>
-              <p>
-                Email: <strong>{user.email}</strong>
-              </p>
-            </StyledUserItem>
+          data.map((post) => (
+            <StyledPostItem key={post.id}>
+              <Typography>User {post.title}</Typography>
+              <p>{post.body}</p>
+            </StyledPostItem>
           ))}
       </ul>
     </>

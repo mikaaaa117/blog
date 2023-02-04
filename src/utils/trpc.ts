@@ -3,6 +3,12 @@ import { httpBatchLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import { getBaseUrl } from "@/utils/getBaseUrl";
 
+let token: string;
+
+export const setToken = (accessToken: string) => {
+  token = accessToken;
+};
+
 export const trpc = createTRPCNext<AppRouter>({
   config({ ctx }) {
     return {
@@ -14,11 +20,14 @@ export const trpc = createTRPCNext<AppRouter>({
               const { connection: _connection, ...headers } = ctx.req.headers;
 
               return {
+                Authorization: `Bearer ${token}`,
                 ...headers,
                 "x-ssr": "1",
               };
             }
-            return {};
+            return {
+              Authorization: `Bearer ${token}`,
+            };
           },
         }),
       ],

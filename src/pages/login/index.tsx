@@ -1,28 +1,34 @@
-import { CreateUserInput } from "@/schema/user.schema";
-import { trpc } from "@/utils/trpc";
+import { CreateUserInput, LoginUserSchema } from "@/schema/user.schema";
+import { Typography } from "@/UI/Typography/Typography";
+import { setToken, trpc } from "@/utils/trpc";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 
 const RegisterPage = () => {
   const { handleSubmit, register } = useForm<CreateUserInput>();
-  // const router = useRouter();
+  const router = useRouter();
 
-  // const { mutate, error } = trpc.user.userRegister.useMutation({
-  //   onError: (error) => { },
-  //   onSuccess: () => {
-  //     router.push("/login");
-  //   },
-  // });
+  const { mutate, error } = trpc.user.userLogin.useMutation({
+    onSuccess: ({ accessToken }) => {
+      console.log(accessToken);
+      setToken(accessToken);
+      router.push("/");
+    },
+  });
 
-  const onSubmit = (values: CreateUserInput) => {
-    // mutate(values);
+  const onSubmit = (values: LoginUserSchema) => {
+    console.log(values);
+    mutate(values);
   };
+
+  if (error && error.message)
+    return <Typography variant="h1">{error.message}</Typography>;
 
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <h2>Login</h2>
+        <Typography variant="h2">Login</Typography>
 
         <label>
           Email
@@ -31,6 +37,11 @@ const RegisterPage = () => {
             placeholder="info@google.com"
             {...register("email")}
           />
+        </label>
+
+        <label>
+          Password
+          <input type="password" placeholder="" {...register("password")} />
         </label>
 
         <button type="submit">Okay</button>
